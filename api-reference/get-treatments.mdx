@@ -199,7 +199,7 @@ message GetTreatmentsRequest {
   int64 maximum_treatment_count = 4;
 }
 
-  enum TreatmentType {
+enum TreatmentType {
   UNSPECIFIED_TREATMENT_TYPE = 0;
   IN_APP_CONTENT_CARD = 1;
   IN_APP_BANNER = 2;
@@ -207,7 +207,7 @@ message GetTreatmentsRequest {
   INAPP_FULL_SCREEN = 4;
   PUSH_NOTIFICATION = 5;
   EMAIL = 6;
-  }
+}
 
 message GetTreatmentsResponse {
   // Unique ID generated for each call to getTreatments. This ID is global to
