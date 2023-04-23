@@ -5,7 +5,7 @@
     "dark": "/images/Auxia_Logo.png",
     "light": "/images/Auxia_Logo_Blue.png"
   },
-  "favicon": "favicon.png",
+  "favicon": "/images/Auxia_Orb.png",
   "colors": {
     "primary": "#0069ED",
     "light": "#4D9CFF",
