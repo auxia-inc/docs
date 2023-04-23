@@ -1,4 +1,151 @@
 ---
 title: "Log Treatment Interactions"
-description: "xxxx"
+description: "This API allows enables your team to monitor how your users are engaging with Auxia treatments."
 ---
+
+# Auxia LogTreatmentInteraction API reference
+
+**POST LogTreatmentInteraction**
+
+```
+https://apis.auxia.io/v1/LogTreatmentInteraction
+```
+
+### Request Parameters
+
+| Parameter | Required | Data Type | Description                                                                                                                                                                                      |
+|------|-----|-----|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| api_key | Optional | String | A string API key that is issued to each company that is a customer of Auxia. This API key should have permission to call this API. <br/><br/>This can be either set in request parameters or in the header |
+
+
+### Headers
+
+| Header | Value                                                                                                                                                                                             |
+|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|    x-api-key    | A string API key that is issued to each company that is a customer of Auxia. This API key should have permission to call this API. <br/><br/> This can be either set in request parameters or in the header |
+|    Content-Type    | application/json                                                                                                                                                                                  |
+
+### Body
+
+raw
+
+
+```
+{
+    "company_id": "1250",
+    "treatment_tracking_id": "6_690e24d8-16a6-4518-bf37-09a8f0120dfb",
+    "interaction_type": "CLICKED",
+    "interaction_time_micros":1667829258250000
+}
+```
+
+
+
+### Example Curl
+
+
+```
+curl --location --request POST 'https://apis.auxia.io/v1/LogTreatmentInteraction?api_key=****************' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "company_id": "1250",
+    "treatment_tracking_id": "6_690e24d8-16a6-4518-bf37-09a8f0120dfb",
+    "interaction_type": "CLICKED",
+    "interaction_time_micros":1667829258250000
+}'
+```
+
+
+OR
+
+
+```
+curl --location --request POST 'https://apis.auxia.io/v1/LogTreatmentInteraction' \
+--header 'Content-Type: application/json, x-api-key: ****************' \
+--data-raw '{
+    "company_id": "1250",
+    "treatment_tracking_id": "6_690e24d8-16a6-4518-bf37-09a8f0120dfb",
+    "interaction_type": "CLICKED",
+    "interaction_time_micros":1667829258250000
+}'
+```
+
+
+
+### Response
+
+
+```
+< content-type: application/json
+<
+{ }
+```
+
+
+
+### Schema Reference
+
+Format here is in proto3, but the REST API samples above are auto generated from these protos.
+
+```
+
+// This API may be called multiple times for each treatment_tracking_id for
+// different interactions or recurring interactions.
+message LogTreatmentInteractionRequest {
+
+  // For a given Auxia customer, this should always be the same.
+  // Required.
+  string company_id = 1;
+
+  // A unique ID that is obtained for each treatment returned by getTreatments
+  // API that can be passed back in this API for completing the feedback loop.
+  // Required.
+  string treatment_tracking_id = 2;
+
+
+  // Specifies the type of interaction to be recorded.
+  // Required.
+  InteractionType interaction_type = 3;
+
+  // The time at which the interaction happened. Please ensure the timestamp
+  // matches the timestamp that is recorded by your analytics events such as
+  // Firebase or Amplitude events.
+  // Represents microseconds of UTC time since Unix epoch
+  // Required.
+  int64 interaction_time_micros = 4;
+}
+
+
+// Specifies the type of interaction to be recorded.
+enum InteractionType {
+  // Request with with this value is invalid and will result in a failure
+  UNSPECIFIED_INTERACTION_TYPE = 0;
+
+  // Indicates that the treatment has been viewed in a UI. Could correspond
+  // to Open for emails.
+  VIEWED = 1;
+
+  // Indicates that the treatment was clicked/tapped on or the CTA on the
+  // treatment was clicked/tapped.
+  CLICKED = 2;
+
+  // Indicates that the user is not interested in this treatment and may not
+  // want to see it again.
+  DISMISSED = 3;
+
+  // Indicates that the user wanted the treatment out of the way temporarily
+  // and may want to see it later. The snooze duration is customized per
+  // treatment while setting up treatments.
+  SNOOZED = 4;
+
+  // Indicates that the action that the treatment was asking the user to do
+  // was completed.
+  CTA_COMPLETED = 5;
+}
+
+
+// Empty response indicates that the RPC completed successfully.
+message LogTreatmentInteractionResponse {
+}
+```
+
