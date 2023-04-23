@@ -2,8 +2,8 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Documentation Starter Kit",
   "logo": {
-    "dark": "/images/auxia_logo.png",
-    "light": "/images/auxia_logo.png"
+    "dark": "/logo/dark.png",
+    "light": "/logo/light.png"
   },
   "favicon": "/images/auxia_logo.png",
   "colors": {
