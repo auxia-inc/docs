@@ -5,7 +5,7 @@
     "dark": "/logo/dark.png",
     "light": "/logo/light.png"
   },
-  "favicon": "/auxia_logo.png",
+  "favicon": "/images/auxia_logo.png",
   "colors": {
     "primary": "#0069ED",
     "light": "#4D9CFF",
