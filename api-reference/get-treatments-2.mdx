@@ -1,0 +1,160 @@
+
+
+## API Definition {api-definition}
+
+**POST Get Treatments**
+
+
+```
+https://apis.auxia.io/v1/GetTreatments
+```
+
+#### Request Parameters
+
+| Parameter | Required | Data Type | Description                                                                                                                                                                                                    |
+|-----------|----------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| api_key   | Optional | String    | A string API key that is issued to each company that is a customer of Auxia. This API key should have permission to call this API. <br/><br/>**This can be either set in request parameters or in the header** |
+
+
+
+#### Headers
+
+| Header    | Value                                                                                                                                                                                                          |
+|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| x-api-key | A string API key that is issued to each company that is a customer of Auxia. This API key should have permission to call this API. <br/><br/>**This can be either set in request parameters or in the header** |
+
+
+
+
+### Schema Reference  {schema-reference}
+
+Format here is in proto3, but the REST API samples above are auto generated from these protos.
+
+```proto
+
+message GetTreatmentsRequest {
+// For a given Auxia customer, this should always be the same.
+// Required.
+string company_id = 1;
+
+// Unique ID for the user that can be joined to events and attributes.
+// Firebase or Amplitude events should have this ID in each event.
+// Required.
+string user_id = 2;
+
+// Set of additional attributes from the App context. Example, current
+// screen, recent actions or context selections of the user. Each contextual
+// attribute is a key value pair.
+// 1. Any User attributes that are potentially newer than what Auxia has last
+//    seen can be passed here so that the latest signals can be included in
+//    the rule processing and ML models for the treatment selection.
+// 2. Other signals telling us about where the user is in the app should be
+//    passed here. This could also a profile id (profile_id) when the same
+//    user can have multiple profiles.
+// Duplicate attributes with the same key will throw an exception.
+repeated ContextualAttribute contextual_attributes = 3;
+
+// Type of treatments being requested.
+TreatmentType treatment_type = 7;
+
+// Language code requested for treatment contents, in the IETF BCP 47 format.
+//
+// If unspecified, a default language (en) is used.
+//
+// Treatments that do not have translations for the requested language will
+// not be returned.
+string language_code = 10;
+
+// Maximum treatments that should be returned for the client.
+// Optional: Defaults to 1 if no value is sent.
+int64 maximum_treatment_count = 4;
+}
+
+enum TreatmentType {
+UNSPECIFIED_TREATMENT_TYPE = 0;
+IN_APP_CONTENT_CARD = 1;
+IN_APP_BANNER = 2;
+IN_APP_BOTTOM_SHEET = 3;
+INAPP_FULL_SCREEN = 4;
+PUSH_NOTIFICATION = 5;
+EMAIL = 6;
+}
+
+message GetTreatmentsResponse {
+// Unique ID generated for each call to getTreatments. This ID is global to
+// the response compared to UserTreatmentPb.treatment_tracking_id that is
+// specific to each treatment in this response. The treatment level ID is
+// required for feedback loop instead of this global response ID unless
+// zero treatments were returned in this response.
+string response_id = 1;
+
+// List of treatments that contain the information needed to render them in a
+// UI or messaging system.
+repeated UserTreatmentPb user_treatments = 2;
+}
+
+// Key value pair
+message ContextualAttribute {
+string key = 1;
+oneof value{
+string string_value = 2;
+int64 integer_value = 3;
+double double_value = 4;
+}
+}
+
+message UserTreatmentPb {
+// Identifies the Treatment template for this user treatment in the
+// Treatment Config UI or Repository.
+string treatment_id = 1;
+
+// A unique ID that is specific to "this RPC Call + this treatment" used for
+// completing the feedback loop. Pass this back in events related to this
+// treatment.
+string treatment_tracking_id = 2;
+
+// The rank of this treatment with reference to other treatments in this
+// response. The treatments in the response are already sorted by rank, but
+// included in case the treatments are moved to other data structures on
+// the client
+int64 rank = 3;
+
+// The content that should be displayed (in app) or included (messages)
+// Placeholders in the content can be replaced by personalization signals.
+// Content format is owned by Auxia Customers via the Treatment Config UI
+// and they may choose how to represent placeholders.
+// Depending on the client platform, Content can be plain text, JSON, HTML,
+// js snippet, or any other format that can directly be inserted into the
+// client UI.
+oneof Content{
+InAppContentCardPb in_app_content_card = 4;
+}
+
+// Language code of the content of this treatment, in the IETF BCP 47 format.
+string content_language_code = 13;
+
+// Key value pairs of signals that can potentially be inserted into the
+// content by replacing placeholders.
+repeated PersonalizationSignal personalization_signals = 12;
+
+DebugDataPb debug_data = 100;
+}
+
+message InAppContentCardPb {
+string content = 1;
+}
+
+message PersonalizationSignal {
+string key = 1;
+oneof value{
+string string_value = 2;
+int64 integer_value = 3;
+double double_value = 4;
+}
+}
+
+
+message DebugDataPb {
+
+}
+```
