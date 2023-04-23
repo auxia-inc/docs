@@ -15,14 +15,14 @@ https://apis.auxia.io/v1/LogTreatmentInteraction
 
 | Parameter | Required | Data Type | Description                                                                                                                                                                                      |
 |------|-----|-----|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| api_key | Optional | String | A string API key that is issued to each company that is a customer of Auxia. This API key should have permission to call this API. <br/><br/>**This can be either set in request parameters or in the header** |
+| api_key | Optional | String | A string API key that is issued to each project or company that uses Auxia. This API key should have permission to call this API. <br/><br/>**This can be either set in request parameters or in the header** |
 
 
 #### Headers
 
 | Header | Value                                                                                                                                                                                             |
 |--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|    x-api-key    | A string API key that is issued to each company that is a customer of Auxia. This API key should have permission to call this API. <br/><br/> **This can be either set in request parameters or in the header** |
+|    x-api-key    | A string API key that is issued to each project or company that uses Auxia. This API key should have permission to call this API. <br/><br/> **This can be either set in request parameters or in the header** |
 |    Content-Type    | application/json                                                                                                                                                                                  |
 
 #### Body
@@ -32,7 +32,7 @@ raw
 
 ```json
 {
-    "company_id": "1250",
+    "project_id": "1250",
     "treatment_tracking_id": "6_690e24d8-16a6-4518-bf37-09a8f0120dfb",
     "interaction_type": "CLICKED",
     "interaction_time_micros":1667829258250000
@@ -48,7 +48,7 @@ raw
 curl --location --request POST 'https://apis.auxia.io/v1/LogTreatmentInteraction?api_key=****************' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "company_id": "1250",
+    "project_id": "1250",
     "treatment_tracking_id": "6_690e24d8-16a6-4518-bf37-09a8f0120dfb",
     "interaction_type": "CLICKED",
     "interaction_time_micros":1667829258250000
@@ -63,7 +63,7 @@ OR
 curl --location --request POST 'https://apis.auxia.io/v1/LogTreatmentInteraction' \
 --header 'Content-Type: application/json, x-api-key: ****************' \
 --data-raw '{
-    "company_id": "1250",
+    "project_id": "1250",
     "treatment_tracking_id": "6_690e24d8-16a6-4518-bf37-09a8f0120dfb",
     "interaction_type": "CLICKED",
     "interaction_time_micros":1667829258250000
@@ -81,8 +81,6 @@ curl --location --request POST 'https://apis.auxia.io/v1/LogTreatmentInteraction
 { }
 ```
 
-
-
 ### Schema Reference
 
 Format here is in proto3, but the REST API samples above are auto generated from these protos.
@@ -93,9 +91,9 @@ Format here is in proto3, but the REST API samples above are auto generated from
 // different interactions or recurring interactions.
 message LogTreatmentInteractionRequest {
 
-  // For a given Auxia customer, this should always be the same.
+  // For a given Auxia customer's project, this should always be the same.
   // Required.
-  string company_id = 1;
+  string project_id = 1;
 
   // A unique ID that is obtained for each treatment returned by getTreatments
   // API that can be passed back in this API for completing the feedback loop.
