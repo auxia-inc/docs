@@ -30,7 +30,7 @@ https://apis.auxia.io/v1/LogTreatmentInteraction
 raw
 
 
-```
+```json
 {
     "company_id": "1250",
     "treatment_tracking_id": "6_690e24d8-16a6-4518-bf37-09a8f0120dfb",
@@ -44,7 +44,7 @@ raw
 ### Example Curl
 
 
-```
+```shell
 curl --location --request POST 'https://apis.auxia.io/v1/LogTreatmentInteraction?api_key=****************' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -59,7 +59,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/LogTreatmentInteraction
 OR
 
 
-```
+```shell
 curl --location --request POST 'https://apis.auxia.io/v1/LogTreatmentInteraction' \
 --header 'Content-Type: application/json, x-api-key: ****************' \
 --data-raw '{
@@ -87,7 +87,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/LogTreatmentInteraction
 
 Format here is in proto3, but the REST API samples above are auto generated from these protos.
 
-```
+```java
 
 // This API may be called multiple times for each treatment_tracking_id for
 // different interactions or recurring interactions.
