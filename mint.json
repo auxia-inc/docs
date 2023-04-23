@@ -35,7 +35,7 @@
     },
     {
       "group": "API Documentation",
-      "pages": ["api-reference/authentication"]
+      "pages": ["api-reference/authentication", "api-reference/get-treatments", "api-reference/log-treatment-interactions"]
     },
     {
       "group": "Endpoint Examples",
