@@ -1,14 +1,31 @@
 
-# Auxia GetTreatments API reference
 
 ## API Definition {api-definition}
 
-
-| Header    | Value                                                                                                                                                                                                 |
-|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| x-api-key | A string API key that is issued to each company that is a customer of Auxia. This API key should have permission to call this API. <br/>This can be either set in request parameters or in the header |
+**POST Get Treatments**
 
 
+```
+https://apis.auxia.io/v1/GetTreatments
+```
+
+#### Request Parameters
+
+| Parameter | Required | Data Type | Description                                                                                                                                                                                                    |
+|-----------|----------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| api_key   | Optional | String    | A string API key that is issued to each company that is a customer of Auxia. This API key should have permission to call this API. <br/><br/>**This can be either set in request parameters or in the header** |
+
+
+
+#### Headers
+
+| Header    | Value                                                                                                                                                                                                          |
+|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| x-api-key | A string API key that is issued to each company that is a customer of Auxia. This API key should have permission to call this API. <br/><br/>**This can be either set in request parameters or in the header** |
+
+
+#### Body
+raw
 ```
 {
     "company_id": "1250",
@@ -29,5 +46,217 @@
     "maximum_treatment_count": 10,
     // Optional. Defaults to "en".
     "language_code": "en"
+}
+```
+
+### Example Curl {example-curl}
+
+
+```
+curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*********************' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "company_id": "1250",
+    "user_id": "appuser@appname.io",
+    "contextual_attributes": [
+        {
+            "key": "profile_id",
+            "string_value": "pr1234"
+        },
+        {
+            "key": "last_action",
+            "string_value": "button_x_clicked"
+        }
+    ],
+
+    "treatment_type": "IN_APP_CONTENT_CARD",
+    "maximum_treatment_count": 10
+}'
+```
+
+
+OR
+
+
+```
+curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
+--header 'Content-Type: application/json, x-api-key: *********************' \
+--data-raw '{
+    "company_id": "1250",
+    "user_id": "appuser@appname.io",
+    "contextual_attributes": [
+        {
+            "key": "profile_id",
+            "string_value": "pr1234"
+        },
+        {
+            "key": "last_action",
+            "string_value": "button_x_clicked"
+        }
+    ],
+
+    "treatment_type": "IN_APP_CONTENT_CARD",
+    "maximum_treatment_count": 10
+}'
+```
+
+
+
+### Response {response}
+
+
+```
+< content-type: application/json
+<
+{
+   "responseId": "690e24d8-16a6-4518-bf37-09a8f0120dfb",
+   "userTreatments": [
+       {
+           "treatmentId": "6",
+           "treatmentTrackingId": "6_690e24d8-16a6-4518-bf37-09a8f0120dfb",
+           "rank": "1",
+           "inAppContentCard": {
+               "content": "{ title: 'You have a new message!', description: 'Learn           how our product helps you', cta_name: 'Learn more', cta_link: '/tabs/home/feed', }"
+           }
+           "personalizationSignals": [
+                {
+                    "key": "first_name",
+                    "stringValue": "CustomerTest"
+                },
+                {
+                    "key": "last_name",
+                    "stringValue": "User"
+                }
+            ]
+       },
+       {
+           "treatmentId": "4",
+           "treatmentTrackingId": "4_690e24d8-16a6-4518-bf37-09a8f0120dfb",
+           "rank": "2",
+           "inAppContentCard": {
+               "content": "{ title: 'Check out your trends', description: '87% of users found this feature useful', cta_name: 'View trends', cta_link: '/actionscreen', }"
+           }
+           "personalizationSignals": [
+                {
+                    "key": "first_name",
+                    "stringValue": "CustomerTest"
+                },
+                {
+                    "key": "last_name",
+                    "stringValue": "User"
+                },
+                {
+                    "key": "activity2_log_last_7_days",
+                    "stringValue": "10"
+                }
+            ]
+       }
+   ]
+}
+```
+
+language-and-translations}
+
+Treatment content such as the in_app_content_card can be translated into different languages.
+
+To use translations, select a specific language code in the “language_code” JSON field when posting to [https://apis.auxia.io/v1/GetTreatments](https://apis.auxia.io/v1/GetTreatments).
+
+For example:
+
+
+```
+curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*********************' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "company_id": "1250",
+    "user_id": "appuser@appname.io",
+    "contextual_attributes": [
+        {
+            "key": "profile_id",
+            "string_value": "pr1234"
+        },
+        {
+            "key": "last_action",
+            "string_value": "button_x_clicked"
+        }
+    ],
+
+    "treatment_type": "IN_APP_CONTENT_CARD",
+    "maximum_treatment_count": 1,
+    "language_code": "vi"
+}'
+```
+
+
+Response:
+
+
+```
+< content-type: application/json
+<
+{
+    "responseId": "18c7c4b3-2093-494a-9996-94989abac914",
+    "userTreatments": [
+        {
+            "treatmentId": "4",
+            "treatmentTrackingId": "4_18c7c4b3-2093-494a-9996-94989abac914",
+            "rank": "1",
+            "inAppContentCard": {
+                "content": "... translated content ..."
+            },
+            "contentLanguageCode": "vi",
+            "personalizationSignals": [
+                {
+                    "key": "first_name",
+                    "stringValue": "CustomerTest"
+                },
+                {
+                    "key": "last_name",
+                    "stringValue": "User"
+                }
+            ]
+        }
+    ],
+}
+```
+
+
+If a treatment is not translated into the language requested, the treatment will not be returned.
+
+For example:
+
+
+```
+curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*********************' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "company_id": "1250",
+    "user_id": "appuser@appname.io",
+    "contextual_attributes": [
+        {
+            "key": "profile_id",
+            "string_value": "pr1234"
+        },
+        {
+            "key": "last_action",
+            "string_value": "button_x_clicked"
+        }
+    ],
+
+    "treatment_type": "IN_APP_CONTENT_CARD",
+    "maximum_treatment_count": 1,
+    "language_code": "eo"
+}'
+```
+
+
+Response:
+
+
+```
+< content-type: application/json
+<
+{
+    "responseId": "e9861c48-f8bf-42dd-a189-a471c35002ad"
 }
 ```
