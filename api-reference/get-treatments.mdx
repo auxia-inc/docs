@@ -1,4 +1,33 @@
----
-title: "Get Treatments"
-description: "Example overview page before API endpoints"
----
+
+# Auxia GetTreatments API reference
+
+## API Definition {api-definition}
+
+
+| Header    | Value                                                                                                                                                                                                 |
+|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| x-api-key | A string API key that is issued to each company that is a customer of Auxia. This API key should have permission to call this API. <br/>This can be either set in request parameters or in the header |
+
+
+```
+{
+    "company_id": "1250",
+    // This is an example user ID. Actual user ID can be obfuscated. See
+    // documentation below
+    "user_id": "gGTE8CWUIgpzPivCejVk7JN284V",
+    "contextual_attributes": [
+        {
+            "key": "profile_id",
+            "string_value": "pr1234"
+        },
+        {
+            "key": "last_action",
+            "string_value": "button_x_clicked"
+        }
+    ],
+    "treatment_type": "IN_APP_CONTENT_CARD",
+    "maximum_treatment_count": 10,
+    // Optional. Defaults to "en".
+    "language_code": "en"
+}
+```
