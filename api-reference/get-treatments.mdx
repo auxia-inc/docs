@@ -31,24 +31,24 @@ https://apis.auxia.io/v1/GetTreatments
 Raw request body
 ```json
 {
-    "project_id": "1250",
+    "projectId": "1250",
     // This is an example user ID. Actual user ID can be obfuscated. See
     // documentation below
-    "user_id": "gGTE8CWUIgpzPivCejVk7JN284V",
-    "contextual_attributes": [
+    "userId": "gGTE8CWUIgpzPivCejVk7JN284V",
+    "contextualAttributes": [
         {
             "key": "profile_id",
-            "string_value": "pr1234"
+            "stringValue": "pr1234"
         },
         {
             "key": "last_action",
-            "string_value": "button_x_clicked"
+            "stringValue": "button_x_clicked"
         }
     ],
-    "treatment_type": "IN_APP_CONTENT_CARD",
-    "maximum_treatment_count": 10,
+    "treatmentType": "IN_APP_CONTENT_CARD",
+    "maximumTreatmentCount": 10,
     // Optional. Defaults to "en".
-    "language_code": "en"
+    "languageCode": "en"
 }
 ```
 
@@ -57,21 +57,21 @@ Raw request body
 curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
 --header 'Content-Type: application/json, x-api-key: *********************' \
 --data-raw '{
-    "project_id": "1250",
-    "user_id": "gGTE8CWUIgpzPivCejVk7JN284V",
-    "contextual_attributes": [
+    "projectId": "1250",
+    "userId": "gGTE8CWUIgpzPivCejVk7JN284V",
+    "contextualAttributes": [
         {
             "key": "profile_id",
-            "integer_value": 10
+            "integerValue": 10
         },
         {
             "key": "last_action",
-            "string_value": "button_x_clicked"
+            "stringValue": "button_x_clicked"
         }
     ],
 
-    "treatment_type": "IN_APP_CONTENT_CARD",
-    "maximum_treatment_count": 10
+    "treatmentType": "IN_APP_CONTENT_CARD",
+    "maximumTreatmentCount": 10
 }'
 ```
 
@@ -133,18 +133,18 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
 ### Request
 | name | Data Type | Required | Description |
 |------|-----|-----|-----|
-| project_id | string | Required | For a given Auxia customer's project, this should always be the same. |
-| user_id | string | Required | This is the Unique ID for the user, which can be joined to their events and attributes. Both Firebase and Amplitude events have this ID in each event.|
-| contextual_attributes | json (see ContextualAttribute below) | Optional | The set of additional attributes from the app's context. Example: Current screen, recent actions, or context selections of the user. Each contextual attribute is a key value pair. <br/> <br/> **What to include:** <br/> 1. Any user attributes that are potentially newer than what Auxia has last seen. This enables the latest signals to be included in the rule processing and ML models for the treatment selection. <br/> <br/>  2. Other signals identifying the user's current context in the app. For example, this could be last_button_clicked or current_screen_id. <br/><br/> Duplicate attributes with the same key will throw an exception. <br/><br/> **Examples:** <br/>("key": "profile_id", "string_value": "pr1234")<br/>( "key": "profile_id","integer_value": 10)
-| treatment_type | string | Required | The type of treatment being requested. This needs to be one of the following: <br/>&nbsp;&nbsp;IN_APP_CONTENT_CARD <br/>&nbsp;&nbsp;IN_APP_BANNER <br/>&nbsp;&nbsp;IN_APP_BOTTOM_SHEET <br/>&nbsp;&nbsp;INAPP_FULL_SCREEN <br/>&nbsp;&nbsp;PUSH_NOTIFICATION <br/>&nbsp;&nbsp;EMAIL |
-| language_code | string | Optional | The language code that is being requested for the content of the treatment. Format: IETF BCP 47. If this field is left unspecified, a default language (en) is used. Treatments that do not have translations for the requested language will not be returned.|
-| maximum_treatment_count | int64 | Optional | The maximum amount of treatments that should be returned for the client. If no value is set, this defaults to 1.|
+| projectId | string | Required | For a given Auxia customer's project, this should always be the same. |
+| userId | string | Required | This is the Unique ID for the user, which can be joined to their events and attributes. Both Firebase and Amplitude events have this ID in each event.|
+| contextualAttributes | json (see ContextualAttribute below) | Optional | The set of additional attributes from the app's context. Example: Current screen, recent actions, or context selections of the user. Each contextual attribute is a key value pair. <br/> <br/> **What to include:** <br/> 1. Any user attributes that are potentially newer than what Auxia has last seen. This enables the latest signals to be included in the rule processing and ML models for the treatment selection. <br/> <br/>  2. Other signals identifying the user's current context in the app. For example, this could be last_button_clicked or current_screen_id. <br/><br/> Duplicate attributes with the same key will throw an exception. <br/><br/> **Examples:** <br/>("key": "profile_id", "stringValue": "pr1234")<br/>( "key": "profile_id","integerValue": 10)
+| treatmentType | string | Required | The type of treatment being requested. This needs to be one of the following: <br/>&nbsp;&nbsp;IN_APP_CONTENT_CARD <br/>&nbsp;&nbsp;IN_APP_BANNER <br/>&nbsp;&nbsp;IN_APP_BOTTOM_SHEET <br/>&nbsp;&nbsp;INAPP_FULL_SCREEN <br/>&nbsp;&nbsp;PUSH_NOTIFICATION <br/>&nbsp;&nbsp;EMAIL |
+| languageCode | string | Optional | The language code that is being requested for the content of the treatment. Format: IETF BCP 47. If this field is left unspecified, a default language (en) is used. Treatments that do not have translations for the requested language will not be returned.|
+| maximumTreatmentCount | int64 | Optional | The maximum amount of treatments that should be returned for the client. If no value is set, this defaults to 1.|
 
 ### Response
 
 | name | Data Type | Description |
 |------|-----|-----|
-| responseId | string | Unique ID generated for each call to getTreatments. This ID is global to the response compared to UserTreatmentPb.treatment_tracking_id that is specific to each treatment in this response. The treatment level ID is required for feedback loop instead of this global response ID unless zero treatments were returned in this response. |
+| responseId | string | Unique ID generated for each call to getTreatments. This ID is global to the response compared to UserTreatment.treatmentTrackingId that is specific to each treatment in this response. The treatment level ID is required for feedback loop instead of this global response ID unless zero treatments were returned in this response. |
 |userTreatments| json (see UserTreatment below) |    List of treatments that contain the information needed to render them in a UI or messaging system.|
 
 ### UserTreatment
@@ -174,22 +174,22 @@ https://apis.auxia.io/v1/GetTreatments.
 curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*********************' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "project_id": "1250",
-    "user_id": "gGTE8CWUIgpzPivCejVk7JN284V",
-    "contextual_attributes": [
+    "projectId": "1250",
+    "userId": "gGTE8CWUIgpzPivCejVk7JN284V",
+    "contextualAttributes": [
         {
             "key": "profile_id",
-            "string_value": "pr1234"
+            "stringValue": "pr1234"
         },
         {
             "key": "last_action",
-            "string_value": "button_x_clicked"
+            "stringValue": "button_x_clicked"
         }
     ],
 
-    "treatment_type": "IN_APP_CONTENT_CARD",
-    "maximum_treatment_count": 1,
-    "language_code": "vi"
+    "treatmentType": "IN_APP_CONTENT_CARD",
+    "maximumTreatmentCount": 1,
+    "languageCode": "vi"
 }'
 ```
 
@@ -236,23 +236,23 @@ If a treatment is not translated into the language requested, then the treatment
 curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*********************' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "project_id": "1250",
-    "user_id": "gGTE8CWUIgpzPivCejVk7JN284V",
-    "contextual_attributes": [
+    "projectId": "1250",
+    "userId": "gGTE8CWUIgpzPivCejVk7JN284V",
+    "contextualAttributes": [
         {
             "key": "profile_id",
-            "string_value": "pr1234"
+            "stringValue": "pr1234"
         },
         {
             "key": "last_action",
-            "string_value": "button_x_clicked"
+            "stringValue": "button_x_clicked"
         }
     ],
 
-    "treatment_type": "IN_APP_CONTENT_CARD",
-    "maximum_treatment_count": 1,
-    "language_code": "eo"
-}'
+    "treatmentType": "IN_APP_CONTENT_CARD",
+    "maximumTreatmentCount": 1,
+    "languageCode": "eo"
+}' # The language code `eo` is not supported.
 ```
 
 
