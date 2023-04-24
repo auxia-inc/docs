@@ -1,9 +1,9 @@
 ---
 title: "Get Treatments"
-description: "XXX"
+description: "The Get Treatments API fetches all of the details that are needed for rendering the treatments in your app or other surface."
 ---
 
-## API Definition {api-definition}
+# API Definition {api-definition}
 
 **POST Get Treatments**
 
@@ -12,7 +12,7 @@ description: "XXX"
 https://apis.auxia.io/v1/GetTreatments
 ```
 
-#### Request Parameters
+### Request Parameters
 
 | Parameter | Required | Data Type | Description                                                                                                                                                                                                    |
 |-----------|----------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -20,15 +20,15 @@ https://apis.auxia.io/v1/GetTreatments
 
 
 
-#### Headers
+### Headers
 
 | Header    | Value                                                                                                                                                                                                          |
 |-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | x-api-key | A string API key that is issued to each project or company that uses Auxia. This API key should have permission to call this API. <br/><br/>**This can be either set in request parameters or in the header** |
 
 
-#### Body
-raw
+### Body
+Raw request body
 ```json
 {
     "project_id": "1250",
@@ -52,7 +52,7 @@ raw
 }
 ```
 
-#### Example Curl {example-curl}
+### Example Curl {example-curl}
 
 
 ```shell
@@ -60,7 +60,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*
 --header 'Content-Type: application/json' \
 --data-raw '{
     "project_id": "1250",
-    "user_id": "appuser@appname.io",
+    "user_id": "gGTE8CWUIgpzPivCejVk7JN284V",
     "contextual_attributes": [
         {
             "key": "profile_id",
@@ -76,17 +76,13 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*
     "maximum_treatment_count": 10
 }'
 ```
-
-
 OR
-
-
 ```shell
 curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
 --header 'Content-Type: application/json, x-api-key: *********************' \
 --data-raw '{
     "project_id": "1250",
-    "user_id": "appuser@appname.io",
+    "user_id": "gGTE8CWUIgpzPivCejVk7JN284V",
     "contextual_attributes": [
         {
             "key": "profile_id",
@@ -103,9 +99,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
 }'
 ```
 
-
-
-#### Response {response}
+### Response {response}
 
 
 ```json
@@ -119,7 +113,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
            "treatmentTrackingId": "6_690e24d8-16a6-4518-bf37-09a8f0120dfb",
            "rank": "1",
            "inAppContentCard": {
-               "content": "{ title: 'You have a new message!', description: 'Learn           how our product helps you', cta_name: 'Learn more', cta_link: '/tabs/home/feed', }"
+               "content": "{ title: 'You have a new message!', description: 'Learn how our product helps you', cta_name: 'Learn more', cta_link: '/tabs/home/feed', }"
            }
            "personalizationSignals": [
                 {
@@ -158,9 +152,127 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
 }
 ```
 
-### Schema Reference  {schema-reference}
+# Schema Reference  {schema-reference}
 
-Format here is in proto3, but the REST API samples above are auto generated from these protos.
+The format for the following request is in Proto3. The proto file are used auto generate the REST API samples above.
+
+### Request Parameters
+| name | Data Type | Required | Description |
+|------|-----|-----|-----|
+| project_id | string | Required | For a given Auxia customer's project, this should always be the same. |
+| user_id | string | Required | This is the Unique ID for the user, which can be joined to their events and attributes. Both Firebase and Amplitude events have this ID in each event.|
+| contextual_attributes | array | Optional | This indicates the set of additional attributes from the app's context. Example: Current screen, recent actions, or context selections of the user. Each contextual attribute is a key value pair. <br/> <br/> **What to include:** <br/><br/> 1. Any user attributes that are potentially newer than what Auxia has last seen. This enables the latest signals to be included in the rule processing and ML models for the treatment selection. <br/> <br/>  2. Other signals identifying the user's current location in the app. This could also include a profile id (profile_id) when the same user can have multiple profiles. Duplicate attributes with the same key will throw an exception.|
+| treatment_type | array | Required | This indicates the type of treatment being requested.|
+| language_code | string | Optional | This indicates the language code that is being requested for the content of the treatment. Format: IETF BCP 47. If this field is left unspecified, a default language (english) is used. Treatments that do not have translations for the requested language will not be returned.|
+| maximum_treatment_count | int64 | Optional | This indicates the maximum amount of treatments that should be returned for the client. If no value is set, this defaults to 1.|
+
+### Example
+```protobuf
+message GetTreatmentsRequest {
+  string project_id = 1;
+  string user_id = 2;
+  repeated ContextualAttribute contextual_attributes = 3;
+  TreatmentType treatment_type = 7;
+  string language_code = 10;
+  int64 maximum_treatment_count = 4;
+}
+```
+
+### Treatment Type
+The following fields represent a standard templates for use in the request.
+```protobuf
+enum TreatmentType {
+  UNSPECIFIED_TREATMENT_TYPE = 0;
+  IN_APP_CONTENT_CARD = 1;
+  IN_APP_BANNER = 2;
+  IN_APP_BOTTOM_SHEET = 3;
+  INAPP_FULL_SCREEN = 4;
+  PUSH_NOTIFICATION = 5;
+  EMAIL = 6;
+}
+```
+
+### Example Response
+```protobuf
+message GetTreatmentsResponse {
+    // Unique ID generated for each call to getTreatments. This ID is global to
+    // the response compared to UserTreatmentPb.treatment_tracking_id that is
+    // specific to each treatment in this response. The treatment level ID is
+    // required for feedback loop instead of this global response ID unless
+    // zero treatments were returned in this response.
+    string response_id = 1;
+
+    // List of treatments that contain the information needed to render them in a
+    // UI or messaging system.
+    repeated UserTreatmentPb user_treatments = 2;
+
+    // Key value pair
+    message ContextualAttribute {
+        string key = 1;
+        oneof value{
+        string string_value = 2;
+        int64 integer_value = 3;
+        double double_value = 4;
+    }
+}
+
+  message UserTreatmentPb {
+  // Identifies the Treatment template for this user treatment in the
+  // Treatment Config UI or Repository.
+  string treatment_id = 1;
+
+  // A unique ID that is specific to "this RPC Call + this treatment" used for
+  // completing the feedback loop. Pass this back in events related to this
+  // treatment.
+  string treatment_tracking_id = 2;
+
+  // The rank of this treatment with reference to other treatments in this
+  // response. The treatments in the response are already sorted by rank, but
+  // included in case the treatments are moved to other data structures on
+  // the client
+  int64 rank = 3;
+
+  // The content that should be displayed (in app) or included (messages)
+  // Placeholders in the content can be replaced by personalization signals.
+  // Content format is owned by Auxia Customers via the Treatment Config UI
+  // and they may choose how to represent placeholders.
+  // Depending on the client platform, Content can be plain text, JSON, HTML,
+  // js snippet, or any other format that can directly be inserted into the
+  // client UI.
+  oneof Content{
+    InAppContentCardPb in_app_content_card = 4;
+  }
+
+  // Language code of the content of this treatment, in the IETF BCP 47 format.
+  string content_language_code = 13;
+
+  // Key value pairs of signals that can potentially be inserted into the
+  // content by replacing placeholders.
+  repeated PersonalizationSignal personalization_signals = 12;
+
+  DebugDataPb debug_data = 100;
+}
+
+message InAppContentCardPb {
+  string content = 1;
+}
+
+message PersonalizationSignal {
+  string key = 1;
+  oneof value{
+    string string_value = 2;
+    int64 integer_value = 3;
+    double double_value = 4;
+  }
+}
+
+message DebugDataPb {
+
+}
+```
+
+
+# REMOVE
 
 ```protobuf
 
@@ -297,15 +409,18 @@ message DebugDataPb {
 
 Treatment content such as the in_app_content_card can be translated into different languages.
 
-To use translations, select a specific language code in the “language_code” JSON field when posting to [https://apis.auxia.io/v1/GetTreatments](https://apis.auxia.io/v1/GetTreatments).
+To use translations, select a specific language code in the “language_code” JSON field when posting to the following:
+```
+https://apis.auxia.io/v1/GetTreatments.
+```
 
-#### For example:
+#### Example
 ```shell
 curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*********************' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "project_id": "1250",
-    "user_id": "appuser@appname.io",
+    "user_id": "gGTE8CWUIgpzPivCejVk7JN284V",
     "contextual_attributes": [
         {
             "key": "profile_id",
@@ -324,7 +439,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*
 ```
 
 
-#### Response:
+#### Response
 
 
 ```json
@@ -356,10 +471,10 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*
 }
 ```
 
+### Non-Translated
+If a treatment is not translated into the language requested, then the treatment will not be returned.
 
-If a treatment is not translated into the language requested, the treatment will not be returned.
-
-#### For example:
+#### Example
 
 
 ```shell
@@ -367,7 +482,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*
 --header 'Content-Type: application/json' \
 --data-raw '{
     "project_id": "1250",
-    "user_id": "appuser@appname.io",
+    "user_id": "gGTE8CWUIgpzPivCejVk7JN284V",
     "contextual_attributes": [
         {
             "key": "profile_id",
@@ -386,7 +501,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*
 ```
 
 
-#### Response:
+#### Response
 
 
 ```json
