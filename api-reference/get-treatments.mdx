@@ -22,9 +22,9 @@ https://apis.auxia.io/v1/GetTreatments
 
 #### Headers
 
-| Header    | Value                                                                                                                                                                                                          |
-|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| x-api-key | A string API key that is issued to each project or company that uses Auxia. This API key should have permission to call this API. <br/><br/>**This can be either set in request parameters or in the header** |
+| Parameter | Required | Data Type | Description |
+|-----------|----------|-----------|-----------|
+| x-api-key | Optional | String | A string API key that is issued to each project or company that uses Auxia. This API key should have permission to call this API. <br/><br/>**This can be either set in request parameters or in the header** |
 
 
 #### Body
@@ -54,7 +54,7 @@ raw
 
 #### Example Curl {example-curl}
 
-
+With api-key in request parameters.
 ```shell
 curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*********************' \
 --header 'Content-Type: application/json' \
@@ -80,7 +80,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*
 
 OR
 
-
+With api-key in request header.
 ```shell
 curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
 --header 'Content-Type: application/json, x-api-key: *********************' \
@@ -119,7 +119,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
            "treatmentTrackingId": "6_690e24d8-16a6-4518-bf37-09a8f0120dfb",
            "rank": "1",
            "inAppContentCard": {
-               "content": "{ title: 'You have a new message!', description: 'Learn           how our product helps you', cta_name: 'Learn more', cta_link: '/tabs/home/feed', }"
+               "content": "{ title: 'You have a new message!', description: 'Learn how our product helps you', cta_name: 'Learn more', cta_link: '/tabs/home/feed'}"
            }
            "personalizationSignals": [
                 {
@@ -137,7 +137,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
            "treatmentTrackingId": "4_690e24d8-16a6-4518-bf37-09a8f0120dfb",
            "rank": "2",
            "inAppContentCard": {
-               "content": "{ title: 'Check out your trends', description: '87% of users found this feature useful', cta_name: 'View trends', cta_link: '/actionscreen', }"
+               "content": "{ title: 'Check out your trends', description: '87% of users found this feature useful', cta_name: 'View trends', cta_link: '/actionscreen'}"
            }
            "personalizationSignals": [
                 {
@@ -187,7 +187,7 @@ message GetTreatmentsRequest {
   repeated ContextualAttribute contextual_attributes = 3;
 
   // Type of treatments being requested.
-  TreatmentType treatment_type = 7;
+  TreatmentType treatment_type = 4;
 
   // Language code requested for treatment contents, in the IETF BCP 47 format.
   //
@@ -195,11 +195,11 @@ message GetTreatmentsRequest {
   //
   // Treatments that do not have translations for the requested language will
   // not be returned.
-  string language_code = 10;
+  string language_code = 5;
 
   // Maximum treatments that should be returned for the client.
   // Optional: Defaults to 1 if no value is sent.
-  int64 maximum_treatment_count = 4;
+  int64 maximum_treatment_count = 6;
 }
 
 enum TreatmentType {
@@ -263,13 +263,11 @@ message GetTreatmentsResponse {
   }
 
   // Language code of the content of this treatment, in the IETF BCP 47 format.
-  string content_language_code = 13;
+  string content_language_code = 5;
 
   // Key value pairs of signals that can potentially be inserted into the
   // content by replacing placeholders.
-  repeated PersonalizationSignal personalization_signals = 12;
-
-  DebugDataPb debug_data = 100;
+  repeated PersonalizationSignal personalization_signals = 6;
 }
 
 message InAppContentCardPb {
@@ -283,10 +281,6 @@ message PersonalizationSignal {
     int64 integer_value = 3;
     double double_value = 4;
   }
-}
-
-message DebugDataPb {
-
 }
 ```
 
