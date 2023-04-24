@@ -53,32 +53,6 @@ Raw request body
 ```
 
 ### Example Curl {example-curl}
-
-With api-key in request parameters.
-```shell
-curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*********************' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "project_id": "1250",
-    "user_id": "gGTE8CWUIgpzPivCejVk7JN284V",
-    "contextual_attributes": [
-        {
-            "key": "profile_id",
-            "string_value": "pr1234"
-        },
-        {
-            "key": "last_action",
-            "string_value": "button_x_clicked"
-        }
-    ],
-
-    "treatment_type": "IN_APP_CONTENT_CARD",
-    "maximum_treatment_count": 10
-}'
-```
-OR
-
-With api-key in request header.
 ```shell
 curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
 --header 'Content-Type: application/json, x-api-key: *********************' \
@@ -88,7 +62,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
     "contextual_attributes": [
         {
             "key": "profile_id",
-            "string_value": "pr1234"
+            "integer_value": 10
         },
         {
             "key": "last_action",
@@ -156,247 +130,32 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
 
 # Schema Reference  {schema-reference}
 
-The format for the following request is in Proto3. The proto file are used auto generate the REST API samples above.
-
-### Request Parameters
+### Request
 | name | Data Type | Required | Description |
 |------|-----|-----|-----|
 | project_id | string | Required | For a given Auxia customer's project, this should always be the same. |
 | user_id | string | Required | This is the Unique ID for the user, which can be joined to their events and attributes. Both Firebase and Amplitude events have this ID in each event.|
-| contextual_attributes | array | Optional | This indicates the set of additional attributes from the app's context. Example: Current screen, recent actions, or context selections of the user. Each contextual attribute is a key value pair. <br/> <br/> **What to include:** <br/><br/> 1. Any user attributes that are potentially newer than what Auxia has last seen. This enables the latest signals to be included in the rule processing and ML models for the treatment selection. <br/> <br/>  2. Other signals identifying the user's current location in the app. This could also include a profile id (profile_id) when the same user can have multiple profiles. Duplicate attributes with the same key will throw an exception.|
-| treatment_type | array | Required | This indicates the type of treatment being requested.|
-| language_code | string | Optional | This indicates the language code that is being requested for the content of the treatment. Format: IETF BCP 47. If this field is left unspecified, a default language (english) is used. Treatments that do not have translations for the requested language will not be returned.|
-| maximum_treatment_count | int64 | Optional | This indicates the maximum amount of treatments that should be returned for the client. If no value is set, this defaults to 1.|
+| contextual_attributes | json (see ContextualAttribute below) | Optional | The set of additional attributes from the app's context. Example: Current screen, recent actions, or context selections of the user. Each contextual attribute is a key value pair. <br/> <br/> **What to include:** <br/> 1. Any user attributes that are potentially newer than what Auxia has last seen. This enables the latest signals to be included in the rule processing and ML models for the treatment selection. <br/> <br/>  2. Other signals identifying the user's current context in the app. For example, this could be last_button_clicked or current_screen_id. <br/><br/> Duplicate attributes with the same key will throw an exception. <br/><br/> **Examples:** <br/>("key": "profile_id", "string_value": "pr1234")<br/>( "key": "profile_id","integer_value": 10)
+| treatment_type | string | Required | The type of treatment being requested. This needs to be one of the following: <br/>&nbsp;&nbsp;IN_APP_CONTENT_CARD <br/>&nbsp;&nbsp;IN_APP_BANNER <br/>&nbsp;&nbsp;IN_APP_BOTTOM_SHEET <br/>&nbsp;&nbsp;INAPP_FULL_SCREEN <br/>&nbsp;&nbsp;PUSH_NOTIFICATION <br/>&nbsp;&nbsp;EMAIL |
+| language_code | string | Optional | The language code that is being requested for the content of the treatment. Format: IETF BCP 47. If this field is left unspecified, a default language (en) is used. Treatments that do not have translations for the requested language will not be returned.|
+| maximum_treatment_count | int64 | Optional | The maximum amount of treatments that should be returned for the client. If no value is set, this defaults to 1.|
 
-### Example
-```protobuf
-message GetTreatmentsRequest {
-  string project_id = 1;
-  string user_id = 2;
-  repeated ContextualAttribute contextual_attributes = 3;
-  TreatmentType treatment_type = 7;
-  string language_code = 10;
-  int64 maximum_treatment_count = 4;
-}
-```
+### Response
 
-### Treatment Type
-The following fields represent a standard templates for use in the request.
-```protobuf
-enum TreatmentType {
-  UNSPECIFIED_TREATMENT_TYPE = 0;
-  IN_APP_CONTENT_CARD = 1;
-  IN_APP_BANNER = 2;
-  IN_APP_BOTTOM_SHEET = 3;
-  INAPP_FULL_SCREEN = 4;
-  PUSH_NOTIFICATION = 5;
-  EMAIL = 6;
-}
-```
+| name | Data Type | Description |
+|------|-----|-----|
+| responseId | string | Unique ID generated for each call to getTreatments. This ID is global to the response compared to UserTreatmentPb.treatment_tracking_id that is specific to each treatment in this response. The treatment level ID is required for feedback loop instead of this global response ID unless zero treatments were returned in this response. |
+|userTreatments| json (see UserTreatment below) |    List of treatments that contain the information needed to render them in a UI or messaging system.|
 
-### Example Response
-```protobuf
-message GetTreatmentsResponse {
-    // Unique ID generated for each call to getTreatments. This ID is global to
-    // the response compared to UserTreatmentPb.treatment_tracking_id that is
-    // specific to each treatment in this response. The treatment level ID is
-    // required for feedback loop instead of this global response ID unless
-    // zero treatments were returned in this response.
-    string response_id = 1;
+### UserTreatment
+| name                | Data Type | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+|---------------------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| treatmentId         | string    | Identifies the Treatment template for this user treatment in the Treatment Config UI or Repository.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| treatmentTrackingId | string    | A unique ID that is specific to "this RPC Call + this treatment" used for completing the feedback loop. Pass this back in events related to this treatment.                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| rank                | int64     | The rank of this treatment with reference to other treatments in this response. The treatments in the response are already sorted by rank, but included in case the treatments are moved to other data structures on the client                                                                                                                                                                                                                                                                                                                                                                                            |
+| inAppContentCard    | json      | The content that should be displayed (in app) or included (messages) Placeholders in the content can be replaced by personalization signals. Content format is owned by Auxia Customers via the Treatment Config UI and they may choose how to represent placeholders. Depending on the client platform, Content can be plain text, JSON, HTML, js snippet, or any other format that can directly be inserted into the client UI. <br/> <br/> **Example:** \{ "content": "\{ title: 'Check out your trends', description: '87% of users found this feature useful', cta_name: 'View trends', cta_link: '/actionscreen'\}"\} |
+| contentLanguageCode    | string      | Language code of the content of this treatment, in the IETF BCP 47 format. |
 
-    // List of treatments that contain the information needed to render them in a
-    // UI or messaging system.
-    repeated UserTreatmentPb user_treatments = 2;
-
-    // Key value pair
-    message ContextualAttribute {
-        string key = 1;
-        oneof value{
-        string string_value = 2;
-        int64 integer_value = 3;
-        double double_value = 4;
-    }
-}
-
-  message UserTreatmentPb {
-  // Identifies the Treatment template for this user treatment in the
-  // Treatment Config UI or Repository.
-  string treatment_id = 1;
-
-  // A unique ID that is specific to "this RPC Call + this treatment" used for
-  // completing the feedback loop. Pass this back in events related to this
-  // treatment.
-  string treatment_tracking_id = 2;
-
-  // The rank of this treatment with reference to other treatments in this
-  // response. The treatments in the response are already sorted by rank, but
-  // included in case the treatments are moved to other data structures on
-  // the client
-  int64 rank = 3;
-
-  // The content that should be displayed (in app) or included (messages)
-  // Placeholders in the content can be replaced by personalization signals.
-  // Content format is owned by Auxia Customers via the Treatment Config UI
-  // and they may choose how to represent placeholders.
-  // Depending on the client platform, Content can be plain text, JSON, HTML,
-  // js snippet, or any other format that can directly be inserted into the
-  // client UI.
-  oneof Content{
-    InAppContentCardPb in_app_content_card = 4;
-  }
-
-  // Language code of the content of this treatment, in the IETF BCP 47 format.
-  string content_language_code = 13;
-
-  // Key value pairs of signals that can potentially be inserted into the
-  // content by replacing placeholders.
-  repeated PersonalizationSignal personalization_signals = 12;
-
-  DebugDataPb debug_data = 100;
-}
-
-message InAppContentCardPb {
-  string content = 1;
-}
-
-message PersonalizationSignal {
-  string key = 1;
-  oneof value{
-    string string_value = 2;
-    int64 integer_value = 3;
-    double double_value = 4;
-  }
-}
-
-message DebugDataPb {
-
-}
-```
-
-
-# REMOVE
-
-```protobuf
-
-message GetTreatmentsRequest {
-  // For a given Auxia customer's project, this should always be the same.
-  // Required.
-  string project_id = 1;
-
-  // Unique ID for the user that can be joined to events and attributes.
-  // Firebase or Amplitude events should have this ID in each event.
-  // Required.
-  string user_id = 2;
-
-  // Set of additional attributes from the App context. Example, current
-  // screen, recent actions or context selections of the user. Each contextual
-  // attribute is a key value pair.
-  // 1. Any User attributes that are potentially newer than what Auxia has last
-  //    seen can be passed here so that the latest signals can be included in
-  //    the rule processing and ML models for the treatment selection.
-  // 2. Other signals telling us about where the user is in the app should be
-  //    passed here. This could also a profile id (profile_id) when the same
-  //    user can have multiple profiles.
-  // Duplicate attributes with the same key will throw an exception.
-  repeated ContextualAttribute contextual_attributes = 3;
-
-  // Type of treatments being requested.
-  TreatmentType treatment_type = 4;
-
-  // Language code requested for treatment contents, in the IETF BCP 47 format.
-  //
-  // If unspecified, a default language (en) is used.
-  //
-  // Treatments that do not have translations for the requested language will
-  // not be returned.
-  string language_code = 5;
-
-  // Maximum treatments that should be returned for the client.
-  // Optional: Defaults to 1 if no value is sent.
-  int64 maximum_treatment_count = 6;
-}
-
-enum TreatmentType {
-  UNSPECIFIED_TREATMENT_TYPE = 0;
-  IN_APP_CONTENT_CARD = 1;
-  IN_APP_BANNER = 2;
-  IN_APP_BOTTOM_SHEET = 3;
-  INAPP_FULL_SCREEN = 4;
-  PUSH_NOTIFICATION = 5;
-  EMAIL = 6;
-}
-
-message GetTreatmentsResponse {
-  // Unique ID generated for each call to getTreatments. This ID is global to
-  // the response compared to UserTreatmentPb.treatment_tracking_id that is
-  // specific to each treatment in this response. The treatment level ID is
-  // required for feedback loop instead of this global response ID unless
-  // zero treatments were returned in this response.
-  string response_id = 1;
-
-  // List of treatments that contain the information needed to render them in a
-  // UI or messaging system.
-  repeated UserTreatmentPb user_treatments = 2;
-  }
-
-  // Key value pair
-  message ContextualAttribute {
-    string key = 1;
-    oneof value{
-    string string_value = 2;
-    int64 integer_value = 3;
-    double double_value = 4;
-  }
-}
-
-  message UserTreatmentPb {
-  // Identifies the Treatment template for this user treatment in the
-  // Treatment Config UI or Repository.
-  string treatment_id = 1;
-
-  // A unique ID that is specific to "this RPC Call + this treatment" used for
-  // completing the feedback loop. Pass this back in events related to this
-  // treatment.
-  string treatment_tracking_id = 2;
-
-  // The rank of this treatment with reference to other treatments in this
-  // response. The treatments in the response are already sorted by rank, but
-  // included in case the treatments are moved to other data structures on
-  // the client
-  int64 rank = 3;
-
-  // The content that should be displayed (in app) or included (messages)
-  // Placeholders in the content can be replaced by personalization signals.
-  // Content format is owned by Auxia Customers via the Treatment Config UI
-  // and they may choose how to represent placeholders.
-  // Depending on the client platform, Content can be plain text, JSON, HTML,
-  // js snippet, or any other format that can directly be inserted into the
-  // client UI.
-  oneof Content{
-    InAppContentCardPb in_app_content_card = 4;
-  }
-
-  // Language code of the content of this treatment, in the IETF BCP 47 format.
-  string content_language_code = 5;
-
-  // Key value pairs of signals that can potentially be inserted into the
-  // content by replacing placeholders.
-  repeated PersonalizationSignal personalization_signals = 6;
-}
-
-message InAppContentCardPb {
-  string content = 1;
-}
-
-message PersonalizationSignal {
-  string key = 1;
-  oneof value{
-    string string_value = 2;
-    int64 integer_value = 3;
-    double double_value = 4;
-  }
-}
-```
 
 ## Appendix {appendix}
 
