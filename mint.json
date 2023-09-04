@@ -1,11 +1,11 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Auxia Technical Documentation",
+  "name": "Auxia Documentation",
   "logo": {
-    "dark": "/images/Auxia_Logo.png",
-    "light": "/images/Auxia_Logo_Blue.png"
+    "dark": "/images/Logo_Full_WB@2x.png",
+    "light": "/images/Logo_Full_Color@2x.png"
   },
-  "favicon": "/images/Auxia_Orb.png",
+  "favicon": "/images/Logo_Color@2x.png",
   "colors": {
     "primary": "#0069ED",
     "light": "#4D9CFF",
@@ -22,8 +22,6 @@
     }
   ],
   "footerSocials": {
-    "twitter": "https://twitter.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
+    "linkedin": "https://www.linkedin.com/company/auxia-io/"
   }
 }
