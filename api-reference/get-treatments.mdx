@@ -45,7 +45,7 @@ Raw request body
             "stringValue": "button_x_clicked"
         }
     ],
-    "treatmentType": "IN_APP_CONTENT_CARD",
+    "surface": "Home Screen",
     "maximumTreatmentCount": 10,
     // Optional. Defaults to "en".
     "languageCode": "en"
@@ -69,8 +69,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
             "stringValue": "button_x_clicked"
         }
     ],
-
-    "treatmentType": "IN_APP_CONTENT_CARD",
+    "surface": "Home Screen",
     "maximumTreatmentCount": 10
 }'
 ```
@@ -88,9 +87,8 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
            "treatmentId": "6",
            "treatmentTrackingId": "6_690e24d8-16a6-4518-bf37-09a8f0120dfb",
            "rank": "1",
-           "inAppContentCard": {
-               "content": "{ title: 'You have a new message!', description: 'Learn how our product helps you', cta_name: 'Learn more', cta_link: '/tabs/home/feed'}"
-           }
+           "treatmentType": "In App Content Card",
+           "treatmentContent": "{ title: 'You have a new message!', description: 'Learn how our product helps you', cta_name: 'Learn more', cta_link: '/tabs/home/feed'}"
            "personalizationSignals": [
                 {
                     "key": "first_name",
@@ -106,9 +104,8 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
            "treatmentId": "4",
            "treatmentTrackingId": "4_690e24d8-16a6-4518-bf37-09a8f0120dfb",
            "rank": "2",
-           "inAppContentCard": {
-               "content": "{ title: 'Check out your trends', description: '87% of users found this feature useful', cta_name: 'View trends', cta_link: '/actionscreen'}"
-           }
+           "treatmentType": "In App Content Card",
+           "treatmentContent": "{ title: 'Check out your trends', description: '87% of users found this feature useful', cta_name: 'View trends', cta_link: '/actionscreen'}"
            "personalizationSignals": [
                 {
                     "key": "first_name",
@@ -136,7 +133,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
 | projectId | string | Required | For a given Auxia customer's project, this should always be the same. |
 | userId | string | Required | This is the Unique ID for the user, which can be joined to their events and attributes. Both Firebase and Amplitude events have this ID in each event.|
 | contextualAttributes | json (see ContextualAttribute below) | Optional | The set of additional attributes from the app's context. Example: Current screen, recent actions, or context selections of the user. Each contextual attribute is a key value pair. <br/> <br/> **What to include:** <br/> 1. Any user attributes that are potentially newer than what Auxia has last seen. This enables the latest signals to be included in the rule processing and ML models for the treatment selection. <br/> <br/>  2. Other signals identifying the user's current context in the app. For example, this could be last_button_clicked or current_screen_id. <br/><br/> Duplicate attributes with the same key will throw an exception. <br/><br/> **Examples:** <br/>("key": "profile_id", "stringValue": "pr1234")<br/>( "key": "profile_id","integerValue": 10)
-| treatmentType | string | Required | The type of treatment being requested. This needs to be one of the following: <br/>&nbsp;&nbsp;IN_APP_CONTENT_CARD <br/>&nbsp;&nbsp;IN_APP_BANNER <br/>&nbsp;&nbsp;IN_APP_BOTTOM_SHEET <br/>&nbsp;&nbsp;INAPP_FULL_SCREEN <br/>&nbsp;&nbsp;PUSH_NOTIFICATION <br/>&nbsp;&nbsp;EMAIL |
+| surface | string | Required | A client configured parameter to request treatments for a particular UI component or screen (home screen) or use case (coupon). A typical example of surface is "Home Screen" or "Purchase Screen".|
 | languageCode | string | Optional | The language code that is being requested for the content of the treatment. Format: IETF BCP 47. If this field is left unspecified, a default language (en) is used. Treatments that do not have translations for the requested language will not be returned.|
 | maximumTreatmentCount | int64 | Optional | The maximum amount of treatments that should be returned for the client. If no value is set, this defaults to 1.|
 
@@ -153,7 +150,8 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments' \
 | treatmentId         | string    | Identifies the Treatment template for this user treatment in the Treatment Config UI or Repository.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | treatmentTrackingId | string    | A unique ID that is specific to "this RPC Call + this treatment" used for completing the feedback loop. Pass this back in events related to this treatment.                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | rank                | int64     | The rank of this treatment with reference to other treatments in this response. The treatments in the response are already sorted by rank, but included in case the treatments are moved to other data structures on the client                                                                                                                                                                                                                                                                                                                                                                                            |
-| inAppContentCard    | json      | The content that should be displayed (in app) or included (messages) Placeholders in the content can be replaced by personalization signals. Content format is owned by Auxia Customers via the Treatment Config UI and they may choose how to represent placeholders. Depending on the client platform, Content can be plain text, JSON, HTML, js snippet, or any other format that can directly be inserted into the client UI. <br/> <br/> **Example:** \{ "content": "\{ title: 'Check out your trends', description: '87% of users found this feature useful', cta_name: 'View trends', cta_link: '/actionscreen'\}"\} |
+| treatmentType    | string      | A client configured parameter which is used to decide how to render the content. An example being "In App Content Card", which might mean that the client is going to render the content with a title and text, accompanied with an image. Another example can be "Banner", which might be a different UI component. |
+| treatmentContent    | string      | The content that should be displayed (in app) or included (messages) Placeholders in the content can be replaced by personalization signals. Content format is owned by Auxia Customers via the Treatment Config UI and they may choose how to represent placeholders. Depending on the client platform, Content can be plain text, JSON, HTML, js snippet, or any other format that can directly be inserted into the client UI. <br/> <br/> **Example:** \{ "content": "\{ title: 'Check out your trends', description: '87% of users found this feature useful', cta_name: 'View trends', cta_link: '/actionscreen'\}"\} |
 | contentLanguageCode    | string      | Language code of the content of this treatment, in the IETF BCP 47 format. |
 
 
@@ -186,8 +184,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*
             "stringValue": "button_x_clicked"
         }
     ],
-
-    "treatmentType": "IN_APP_CONTENT_CARD",
+    "surface": "Home Screen",
     "maximumTreatmentCount": 1,
     "languageCode": "vi"
 }'
@@ -207,9 +204,8 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*
             "treatmentId": "4",
             "treatmentTrackingId": "4_18c7c4b3-2093-494a-9996-94989abac914",
             "rank": "1",
-            "inAppContentCard": {
-                "content": "... translated content ..."
-            },
+            "treatmentContent": "... translated content ..."
+            "treatmentType": "In App Content Card",
             "contentLanguageCode": "vi",
             "personalizationSignals": [
                 {
@@ -248,8 +244,7 @@ curl --location --request POST 'https://apis.auxia.io/v1/GetTreatments?api_key=*
             "stringValue": "button_x_clicked"
         }
     ],
-
-    "treatmentType": "IN_APP_CONTENT_CARD",
+    "surface": "Home Screen",
     "maximumTreatmentCount": 1,
     "languageCode": "eo"
 }' # The language code `eo` is not supported.
